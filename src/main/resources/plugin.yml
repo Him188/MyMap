@@ -1,0 +1,13 @@
+name: MyMap
+author: Him188
+version: 1.0.0
+api: [1.0.0]
+main: com.him188.mymap.MyMap
+description: "Shows images on your server!"
+
+softdepend:
+  - Mr_World
+  - MultiWorld
+  - Worlds
+  - SMultiWorld
+  - MultiWorlds
