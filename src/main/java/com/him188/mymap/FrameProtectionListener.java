@@ -5,6 +5,7 @@ import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.block.BlockUpdateEvent;
+import cn.nukkit.event.block.ItemFrameDropItemEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 
 /**
@@ -29,7 +30,7 @@ public final class FrameProtectionListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onInteract(BlockBreakEvent event) {
+    public void onDrop(ItemFrameDropItemEvent event) {
         for (MyMapFrame frame : plugin.getList()) {
             if (frame.inRange(event.getBlock())) {
                 event.setCancelled();
@@ -38,7 +39,16 @@ public final class FrameProtectionListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onInteract(BlockUpdateEvent event) {
+    public void onBreak(BlockBreakEvent event) {
+        for (MyMapFrame frame : plugin.getList()) {
+            if (frame.inRange(event.getBlock())) {
+                event.setCancelled();
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onUpdate(BlockUpdateEvent event) {
         for (MyMapFrame frame : plugin.getList()) {
             if (frame.inRange(event.getBlock())) {
                 event.setCancelled();

@@ -14,7 +14,7 @@ import cn.nukkit.event.entity.EntityLevelChangeEvent;
 public class CommonListener implements Listener {
     private final MyMap plugin;
 
-    CommonListener(MyMap plugin) {
+    CommonListener(MyMap plugin) { // TODO: 2017/8/11 remove this
         this.plugin = plugin;
     }
 

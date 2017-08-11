@@ -63,6 +63,7 @@ public final class Utils {
             ".jpg",
             ".jpeg",
             ".bmp",
+            ".wbmp",
     };
 
     public static File defineFile(String path) {

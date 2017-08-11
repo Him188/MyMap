@@ -1,13 +1,18 @@
 package com.him188.mymap;
 
+import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.plugin.PluginBase;
+import cn.nukkit.scheduler.PluginTask;
+import cn.nukkit.utils.Config;
 import com.him188.mymap.event.FrameAddEvent;
 import com.him188.mymap.event.FrameRemoveEvent;
+import com.him188.mymap.utils.FrameList;
 import com.him188.mymap.utils.Utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -43,6 +48,17 @@ public final class MyMap extends PluginBase {
 
         list = new FrameList();
 
+        File[] files = MyMapFrame.FRAME_DATA_FOLDER.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                try {
+                    list.add(MyMapFrame.fromConfigSection(new Config(file, Config.YAML).getRootSection()));
+                } catch (IOException e) {
+                    getLogger().error("加载画框 " + file.getName() + " 时遇到错误", e);
+                }
+            }
+        }
+
         if (settingListener == null) {
             settingListener = new SettingListener(this);
             getServer().getPluginManager().registerEvents(settingListener, this);
@@ -60,6 +76,15 @@ public final class MyMap extends PluginBase {
 
         getServer().getPluginManager().addPermission(new Permission("mymap.main", "MyMap main command", "op"));
         getServer().getCommandMap().register("mymap", new MainCommand("mymap", this));
+
+        getServer().getScheduler().scheduleRepeatingTask(new PluginTask<MyMap>(this) {
+            @Override
+            public void onRun(int currentTick) {
+                for (Player player : Server.getInstance().getOnlinePlayers().values()) {
+                    player.sendPopup("TPS: " + Server.getInstance().getTicksPerSecond());
+                }
+            }
+        }, 10);
     }
 
     @Override
@@ -79,7 +104,7 @@ public final class MyMap extends PluginBase {
         }
         frame.clear();
         list.remove(frame);
-        return false;
+        return true;
     }
 
     public boolean addFrame(MyMapFrame frame) {

@@ -18,7 +18,7 @@ import java.util.Objects;
 public abstract class ImageAdapter {
     private BufferedImage image;
 
-    public ImageAdapter(BufferedImage image) {
+    public ImageAdapter(BufferedImage image) throws IOException {
         setImage(image);
     }
 
@@ -26,7 +26,7 @@ public abstract class ImageAdapter {
         setImage(image);
     }
 
-    public void setImage(BufferedImage image) {
+    public void setImage(BufferedImage image) throws IOException {
         this.image = Objects.requireNonNull(image, "image");
     }
 
@@ -47,7 +47,7 @@ public abstract class ImageAdapter {
      * @param width  目标图片宽
      * @param height 目标图片高
      */
-    public abstract void doAdaptation(int width, int height);
+    public abstract void doAdaptation(int width, int height) throws IOException;
 
     /**
      * 将图像裁剪为多个小块
@@ -56,7 +56,7 @@ public abstract class ImageAdapter {
      *
      * @return 小图像集合
      */
-    public final Map<Vector2, BufferedImage> cropAsSubImages(int width) {
+    public Map<Vector2, BufferedImage> cropAsSubImages(final int width) {
         int xCount = this.getImage().getWidth() / width;
         int yCount = this.getImage().getHeight() / width;
         Map<Vector2, BufferedImage> map = new HashMap<>();

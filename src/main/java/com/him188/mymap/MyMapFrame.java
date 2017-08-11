@@ -7,8 +7,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.ConfigSection;
 import com.him188.mymap.event.FrameImageChangeEvent;
+import com.him188.mymap.image.ImageUpdater;
 import com.him188.mymap.task.AsyncImageUpdateTask;
-import com.him188.mymap.utils.ImageUpdater;
 import com.him188.mymap.utils.Utils;
 
 import java.io.File;
@@ -41,7 +41,7 @@ public class MyMapFrame {
     private final Level level;
     private final BlockFace face;
 
-    private final ImageUpdater imageUpdater;
+    private ImageUpdater imageUpdater;
     private final Config config;
 
     public MyMapFrame(String id, Vector3 startPos, Vector3 endPos, Level level, BlockFace face, File imageFile) throws IOException {
@@ -50,19 +50,27 @@ public class MyMapFrame {
         this.endPos = endPos;
         this.face = face;
         Utils.analyzeVector3(this.startPos, this.endPos, this.getFace());
-        this.imageFile = imageFile == null ? DEFAULT_IMAGE_FILE : imageFile;
+        this.imageFile = imageFile == null ? DEFAULT_IMAGE_FILE : Utils.defineFile(imageFile.getPath());
+        this.imageFile = this.imageFile == null ? DEFAULT_IMAGE_FILE : this.imageFile;
+
         this.level = level;
-        this.imageUpdater = new ImageUpdater(this.startPos, this.endPos, this.level, this.face, this.imageFile);
+        initImageUpdater();
         this.config = new Config(new File(MyMapFrame.FRAME_DATA_FOLDER, this.getId() + ".yml"), Config.YAML);
-        this.updateImage(true);
+        this.updateImage(false);
     }
 
+    private void initImageUpdater() throws IOException {
+        this.imageUpdater = ImageUpdater.getImageUpdater(this.startPos, this.endPos, this.level, this.face, this.imageFile);
+    }
+
+
     public void save() {
+        this.config.set("id", id);
         this.config.set("startPos", Utils.parseConfigSection(startPos));
         this.config.set("endPos", Utils.parseConfigSection(endPos));
         this.config.set("level", level.getFolderName());
         this.config.set("face", face.getIndex());
-        this.config.set("imageFile", imageFile.getAbsolutePath());
+        this.config.set("imageFile", imageFile.getPath());
         this.config.save();
     }
 
@@ -94,14 +102,15 @@ public class MyMapFrame {
         return imageUpdater;
     }
 
-    public boolean setImageFile(File imageFile) {
+    public boolean setImageFile(File imageFile) throws IOException {
         FrameImageChangeEvent event = new FrameImageChangeEvent(this, imageFile);
         Server.getInstance().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
         }
         this.imageFile = event.getImageFile();
-        this.updateImage(true);
+        this.initImageUpdater();
+        this.updateImage(false);
         return true;
     }
 
@@ -115,7 +124,7 @@ public class MyMapFrame {
     private boolean updating;
 
     @SuppressWarnings("UnusedReturnValue")
-    public final boolean updateImage(boolean async) {
+    public boolean updateImage(boolean async) {
         if (this.updating) {
             return false;
         }

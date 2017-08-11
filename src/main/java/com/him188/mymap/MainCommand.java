@@ -10,6 +10,7 @@ import cn.nukkit.utils.TextFormat;
 import com.him188.mymap.utils.Utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -31,7 +32,7 @@ public final class MainCommand extends PluginCommand<MyMap> implements CommandEx
                 });
 
                 put("set_picture", new CommandParameter[]{
-                        new CommandParameter("arg", new String[]{"setpictrue", "setimage", "sp", "si"}),
+                        new CommandParameter("arg", new String[]{"setpicture", "setimage", "sp", "si"}),
                         new CommandParameter("id", CommandParameter.ARG_TYPE_STRING, false),
                         new CommandParameter("image file", CommandParameter.ARG_TYPE_RAW_TEXT, false),
                 });
@@ -105,16 +106,23 @@ public final class MainCommand extends PluginCommand<MyMap> implements CommandEx
                         return true;
                     }
 
-                    File file = Utils.defineFile(args[2]);
+                    File file = Utils.defineFile(new File(MyMapFrame.IMAGE_DATA_FOLDER, args[2]).getPath());
                     if (file == null) {
-                        sender.sendMessage(TextFormat.RED + "文件 " + args[1] + " 不存在. 请设置位于 " + MyMapFrame.IMAGE_DATA_FOLDER + " 目录下的文件名. 后缀自动检测(支持jpg,gif(包括动态),bmp,webp,png)");
+                        sender.sendMessage(TextFormat.RED + "文件 " + args[2] + " 不存在. 请设置位于 " + MyMapFrame.IMAGE_DATA_FOLDER + " 目录下的文件名. 后缀自动检测(支持jpg,gif(包括动态),bmp,webp,png)");
                         return true;
                     }
 
-                    if (!frame.setImageFile(file)) {
-                        sender.sendMessage(TextFormat.RED + "操作被意外终止");
+                    try {
+                        if (!frame.setImageFile(file)) {
+                            sender.sendMessage(TextFormat.RED + "操作被意外终止");
+                            return true;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        sender.sendMessage(TextFormat.RED + "文件无法读取. 请更换图片");
                         return true;
                     }
+                    frame.save();
 
                     sender.sendMessage(TextFormat.AQUA + "设置成功");
                     return true;

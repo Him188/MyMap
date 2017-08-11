@@ -1,8 +1,9 @@
-package com.him188.mymap;
+package com.him188.mymap.utils;
 
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
+import com.him188.mymap.MyMapFrame;
 
 import java.util.ArrayList;
 
