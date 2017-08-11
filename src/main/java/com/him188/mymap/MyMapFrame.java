@@ -51,7 +51,6 @@ public class MyMapFrame {
         this.face = face;
         Utils.analyzeVector3(this.startPos, this.endPos, this.getFace());
         this.imageFile = imageFile == null ? DEFAULT_IMAGE_FILE : Utils.defineFile(imageFile.getPath());
-        this.imageFile = this.imageFile == null ? DEFAULT_IMAGE_FILE : this.imageFile;
 
         this.level = level;
         initImageUpdater();
@@ -60,6 +59,7 @@ public class MyMapFrame {
     }
 
     private void initImageUpdater() throws IOException {
+        this.imageFile = this.imageFile == null ? DEFAULT_IMAGE_FILE : this.imageFile;
         this.imageUpdater = ImageUpdater.getImageUpdater(this.startPos, this.endPos, this.level, this.face, this.imageFile);
     }
 
