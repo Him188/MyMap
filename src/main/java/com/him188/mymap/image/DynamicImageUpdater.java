@@ -16,6 +16,7 @@ import com.him188.mymap.MyMap;
 import com.him188.mymap.adapter.ImageAdapter;
 import com.him188.mymap.adapter.ResizeDynamicImageAdapter;
 import com.him188.mymap.task.GIFPlayTask;
+import com.him188.mymap.utils.Utils;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -83,7 +84,7 @@ public class DynamicImageUpdater extends ImageUpdater {
             Vector3 pos;
             pos = calculatePos(vector2);
 
-            BlockItemFrame frame = new BlockItemFrame();
+            BlockItemFrame frame = new BlockItemFrame(Utils.getMetaByFace(face));
             level.setBlock(pos, frame, true, false);
 
             FullChunk chunk = level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, true);
@@ -103,13 +104,14 @@ public class DynamicImageUpdater extends ImageUpdater {
     }
 
     private void updateMaps(ImageAdapter adapter) {
+        final Player[] players = getLevel().getPlayers().values().toArray(new Player[0]);
         adapter.cropAsSubImages(SUB_IMAGE_WIDTH).forEach((vector2, image) -> {
             if (!maps.containsKey(hash(vector2))) {
                 MyMap.getInstance().getLogger().error("播放 GIF 时出现错误: 帧找不到有效地图");
                 return;
             }
             ItemMap map = maps.get(hash(vector2));
-            for (Player player : getLevel().getPlayers().values()) {
+            for (Player player : players) {
                 if (player.loggedIn && new Vector2(player.getX(), player.getZ()).distance(vector2) >= VIEW_DISTANCE) {
                     sendImage(image, map.getMapId(), player);
                 }

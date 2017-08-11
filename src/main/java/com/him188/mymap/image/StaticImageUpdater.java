@@ -10,6 +10,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import com.him188.mymap.adapter.ImageAdapter;
 import com.him188.mymap.adapter.ResizeImageAdapter;
+import com.him188.mymap.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class StaticImageUpdater extends ImageUpdater {
             Vector3 pos;
             pos = calculatePos(vector2);
 
-            BlockItemFrame frame = new BlockItemFrame();
+            BlockItemFrame frame = new BlockItemFrame(Utils.getMetaByFace(face));
             level.setBlock(pos, frame, true, false);
 
             FullChunk chunk = level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, true);

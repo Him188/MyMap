@@ -71,62 +71,64 @@ public final class MainCommand extends PluginCommand<MyMap> implements CommandEx
                     sender.sendMessage(TextFormat.AQUA + "开始设置, 请点击一个点, 这个点将作为矩形画框起始点");
                     return true;
                 }
+            }
+        }
 
-                case "remove": {
-                    if (args.length != 2) {
-                        return false;
-                    }
+        switch (arg) {
+            case "remove": {
+                if (args.length != 2) {
+                    return false;
+                }
 
-                    MyMapFrame frame = getPlugin().getList().getById(args[1]);
-                    if (frame == null) {
-                        sender.sendMessage(TextFormat.RED + "ID为 " + args[1] + " 的画框不存在");
-                        return true;
-                    }
+                MyMapFrame frame = getPlugin().getList().getById(args[1]);
+                if (frame == null) {
+                    sender.sendMessage(TextFormat.RED + "ID为 " + args[1] + " 的画框不存在");
+                    return true;
+                }
 
-                    if (!getPlugin().removeFrame(frame)) {
+                if (!getPlugin().removeFrame(frame)) {
+                    sender.sendMessage(TextFormat.RED + "操作被意外终止");
+                    return true;
+                }
+
+                sender.sendMessage(TextFormat.AQUA + "删除成功");
+                return true;
+            }
+
+            case "setpicture":
+            case "sp":
+            case "setimage":
+            case "si": {
+                if (args.length < 3) {
+                    return false;
+                }
+
+                MyMapFrame frame = getPlugin().getList().getById(args[1]);
+                if (frame == null) {
+                    sender.sendMessage(TextFormat.RED + "ID为 " + args[1] + " 的画框不存在");
+                    return true;
+                }
+
+                File file = Utils.defineFile(new File(MyMapFrame.IMAGE_DATA_FOLDER, args[2]).getPath());
+                if (file == null) {
+                    sender.sendMessage(TextFormat.RED + "文件 " + args[2] + " 不存在. 请设置位于 " + MyMapFrame.IMAGE_DATA_FOLDER + " 目录下的文件名. 后缀自动检测(支持jpg,gif(包括动态),bmp,webp,png)");
+                    return true;
+                }
+
+                try {
+                    if (!frame.setImageFile(file)) {
                         sender.sendMessage(TextFormat.RED + "操作被意外终止");
                         return true;
                     }
-
-                    sender.sendMessage(TextFormat.AQUA + "删除成功");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    sender.sendMessage(TextFormat.RED + "文件无法读取. 请更换图片");
                     return true;
                 }
+                frame.save();
 
-                case "setpicture":
-                case "sp":
-                case "setimage":
-                case "si": {
-                    if (args.length < 3) {
-                        return false;
-                    }
-
-                    MyMapFrame frame = getPlugin().getList().getById(args[1]);
-                    if (frame == null) {
-                        sender.sendMessage(TextFormat.RED + "ID为 " + args[1] + " 的画框不存在");
-                        return true;
-                    }
-
-                    File file = Utils.defineFile(new File(MyMapFrame.IMAGE_DATA_FOLDER, args[2]).getPath());
-                    if (file == null) {
-                        sender.sendMessage(TextFormat.RED + "文件 " + args[2] + " 不存在. 请设置位于 " + MyMapFrame.IMAGE_DATA_FOLDER + " 目录下的文件名. 后缀自动检测(支持jpg,gif(包括动态),bmp,webp,png)");
-                        return true;
-                    }
-
-                    try {
-                        if (!frame.setImageFile(file)) {
-                            sender.sendMessage(TextFormat.RED + "操作被意外终止");
-                            return true;
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        sender.sendMessage(TextFormat.RED + "文件无法读取. 请更换图片");
-                        return true;
-                    }
-                    frame.save();
-
-                    sender.sendMessage(TextFormat.AQUA + "设置成功");
-                    return true;
-                }
+                sender.sendMessage(TextFormat.AQUA + "设置成功");
+                return true;
             }
         }
 

@@ -1,6 +1,10 @@
 package com.him188.mymap;
 
 import cn.nukkit.Server;
+import cn.nukkit.block.BlockAir;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityItemFrame;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -43,6 +47,7 @@ public class MyMapFrame {
 
     private ImageUpdater imageUpdater;
     private final Config config;
+    private final File configFile;
 
     public MyMapFrame(String id, Vector3 startPos, Vector3 endPos, Level level, BlockFace face, File imageFile) throws IOException {
         this.id = id;
@@ -54,7 +59,8 @@ public class MyMapFrame {
 
         this.level = level;
         initImageUpdater();
-        this.config = new Config(new File(MyMapFrame.FRAME_DATA_FOLDER, this.getId() + ".yml"), Config.YAML);
+        this.configFile = new File(MyMapFrame.FRAME_DATA_FOLDER, this.getId() + ".yml");
+        this.config = new Config(configFile, Config.YAML);
         this.updateImage(false);
     }
 
@@ -115,9 +121,9 @@ public class MyMapFrame {
     }
 
     public boolean inRange(Vector3 vector3) {
-        return endPos.x >= vector3.x && vector3.x >= startPos.x
-               && endPos.y >= vector3.y && vector3.y >= startPos.y
-               && endPos.z >= vector3.z && vector3.z >= startPos.z;
+        return ((endPos.x >= vector3.x && vector3.x >= startPos.x) || (startPos.x >= vector3.x && vector3.x >= endPos.x))
+               && ((endPos.y >= vector3.y && vector3.y >= startPos.y) || (startPos.y >= vector3.y && vector3.y >= endPos.y))
+               && ((endPos.z >= vector3.z && vector3.z >= startPos.z) || (startPos.z >= vector3.z && vector3.z >= endPos.z));
     }
 
 
@@ -151,6 +157,30 @@ public class MyMapFrame {
      * 用空气替换区域
      */
     public void clear() {
-        // TODO: 2017/8/10
+        if (this.configFile.exists() && this.configFile.isFile()) {
+            if (!this.configFile.delete()) {
+                this.config.setAll(new ConfigSection());
+                this.config.save();
+                MyMap.getInstance().getLogger().error("无法删除 " + this.getId() + " 的配置文件.");
+            }
+        }
+
+        Vector3 v = this.startPos.clone();
+
+        Vector3 min = new Vector3(Math.min(this.startPos.x, this.endPos.x), Math.min(this.startPos.y, this.endPos.y), Math.min(this.startPos.z, this.endPos.z));
+        Vector3 max = new Vector3(Math.max(v.x, this.endPos.x), Math.max(v.y, this.endPos.y), Math.max(v.z, this.endPos.z));
+        Vector3 subtract = max.subtract(min).floor();
+        for (int x = 0; x <= subtract.getX(); x++) {
+            for (int y = 0; y <= subtract.getY(); y++) {
+                for (int z = 0; z <= subtract.getZ(); z++) {
+                    Vector3 pos = min.add(x, y, z);
+                    BlockEntity blockEntity = this.level.getBlockEntity(pos);
+                    if (blockEntity != null && blockEntity instanceof BlockEntityItemFrame) {
+                        ((BlockEntityItemFrame) blockEntity).setItem(new ItemBlock(new BlockAir()));
+                    }
+                    this.level.setBlock(pos, new BlockAir(), true, false);
+                }
+            }
+        }
     }
 }

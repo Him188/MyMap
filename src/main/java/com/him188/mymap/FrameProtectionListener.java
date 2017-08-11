@@ -33,6 +33,9 @@ public final class FrameProtectionListener implements Listener {
     public void onDrop(ItemFrameDropItemEvent event) {
         for (MyMapFrame frame : plugin.getList()) {
             if (frame.inRange(event.getBlock())) {
+                if (event.getPlayer().isOp()) {
+                    event.getPlayer().sendTip("画框ID: " + frame.getId());
+                }
                 event.setCancelled();
             }
         }

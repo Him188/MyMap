@@ -75,4 +75,19 @@ public final class Utils {
         }
         return null;
     }
+
+    public static int getMetaByFace(BlockFace face) {
+        switch (face) {
+            case NORTH:
+                return 3;
+            case SOUTH:
+                return 2;
+            case WEST:
+                return 1;
+            case EAST:
+                return 0;
+            default:
+                return -1;
+        }
+    }
 }
