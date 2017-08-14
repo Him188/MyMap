@@ -11,7 +11,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 /**
- * Source code from CSDN.net(<a href="http://blog.csdn.net/fantao963/article/details/2956080"></>)
+ * Source code from <a href="http://blog.csdn.net/fantao963/article/details/2956080">CSDN.net</a>
  *
  * @author fantao963
  */

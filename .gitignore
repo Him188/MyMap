@@ -25,3 +25,5 @@ atlassian-ide-plugin.xml
 hs_err_pid*
 
 target/
+
+nukkit/
