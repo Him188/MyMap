@@ -1,119 +1,157 @@
 package com.him188.mymap.adapter;
 
-import cn.nukkit.math.Vector2;
-import com.him188.mymap.utils.GifDecoder;
+import cn.nukkit.Server;
+import cn.nukkit.scheduler.AsyncTask;
+import com.him188.mymap.MyMap;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.Objects;
 
 /**
  * @author Him188 @ MyMap Project
  */
 public class ResizeDynamicImageAdapter extends ImageAdapter {
-    private int count;
-    private int n;
-    private ImageAdapter[] images;
-    private GifDecoder decoder;
+    private static final int CACHE_SIZE = 50;
+    private static final int DEFAULT_DELAY = 3000;
 
-    public ResizeDynamicImageAdapter(BufferedImage file) throws IOException {
-        super(file);
-    }
+    private int n;
+
+    private int cachedKey;
+    private LinkedList<SingleImageAdapter> cachedImages;
+    private int[] delays;
+
+    private File imageDirectory;
+    private File[] files;
+
+    private int adaptationWidth;
+    private int adaptationHeight;
+    private int maxIndex;
 
     public ResizeDynamicImageAdapter(File file) throws IOException {
-        super(file);
+        setImage(file);
     }
 
-    @Override
-    public void setImage(BufferedImage image) throws IOException {
-        this.n = 0;
-        decoder = new GifDecoder();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ImageIO.write(image, "gif", out);
-        decoder.read(new ByteArrayInputStream(out.toByteArray()));
-        getImages();
-    }
-
-    @Override
-    public void setImage(File imageFile) throws IOException {
-        this.n = 0;
-        decoder = new GifDecoder();
-        decoder.read(new FileInputStream(imageFile));
-        getImages();
-    }
-
-    private void getImages() throws IOException {
-        count = decoder.getFrameCount();
-        this.images = new ImageAdapter[count];
-        for (int i = 0; i < count; i++) {
-            this.images[i] = new ResizeImageAdapter(decoder.getFrame(i));
+    public void setImage(File imageDirectory) throws IOException {
+        this.imageDirectory = Objects.requireNonNull(imageDirectory, "imageDirectory");
+        if (!imageDirectory.isDirectory()) {
+            throw new IllegalArgumentException("file is not directory");
         }
+    }
+
+    public File getImageDirectory() {
+        return this.imageDirectory;
     }
 
     @Override
     public void doAdaptation(int width, int height) throws IOException {
-        for (int i = 0; i < count; i++) {
-            ImageAdapter subAdapter = new ResizeImageAdapter(decoder.getFrame(i));
-            subAdapter.doAdaptation(width, height);
-            this.images[i] = subAdapter;
+        this.adaptationWidth = width;
+        this.adaptationHeight = height;
+
+        this.files = this.imageDirectory.listFiles();
+        if (this.files == null) {
+            this.cachedKey = 0;
+            this.cachedImages = new LinkedList<>();
+            this.delays = new int[0];
+            return;
+        }
+
+        this.cachedKey = 0;
+        this.cachedImages = new LinkedList<>();
+        this.delays = new int[this.files.length];
+
+        for (int i = 0; i < this.files.length; i++) {
+            this.delays[i] = getDelay(this.files[i]);
+        }
+
+        this.n = 0;
+        this.updateCache(CACHE_SIZE);
+    }
+
+    private static int getDelay(File file) {
+        String name = Objects.requireNonNull(file).getName();
+        if (name.contains(".")) {
+            name = name.substring(0, name.indexOf("."));
+        }
+
+        String[] strings;
+        if (name.contains("-")) {
+            strings = name.split("-");
+        } else if (name.contains("_")) {
+            strings = name.split("_");
+        } else {
+            return DEFAULT_DELAY;
+        }
+
+        try {
+            return Integer.parseInt(strings[1]);
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException ignored) {
+            return DEFAULT_DELAY;
         }
     }
 
-    /**
-     * Gets the first frame of gif image
-     *
-     * @return the first frame of gif image
-     */
-    @Override
-    public BufferedImage getImage() {
-        return decoder.getFrame(0);
-    }
-
-    public int getDelay() {
-        return decoder.getDelay(this.n);
+    private synchronized void updateCache(int count) throws IOException {
+        if (count < this.files.length) {
+            maxIndex = count - 1;
+            for (int i = 0; i < count; i++) {
+                if (this.cachedKey++ == this.files.length) {
+                    this.cachedKey = 0;
+                }
+                this.cachedImages.poll();
+                SingleImageAdapter subAdapter = new ResizeImageAdapter(this.files[this.cachedKey]);
+                subAdapter.doAdaptation(adaptationWidth, adaptationHeight);
+                this.cachedImages.offer(subAdapter);
+            }
+        } else {
+            maxIndex = this.files.length - 1;
+            if (this.cachedImages.isEmpty()) {
+                for (int i = 0; i < this.files.length; i++) {
+                    SingleImageAdapter subAdapter = new ResizeImageAdapter(this.files[this.cachedKey + i]);
+                    subAdapter.doAdaptation(adaptationWidth, adaptationHeight);
+                    this.cachedImages.addLast(subAdapter);
+                }
+            }
+        }
     }
 
     public int getFrameCount() {
-        return count;
+        return this.files.length;
     }
 
-    public ImageAdapter getFrame() {
-        return this.images[this.n];
+    public SingleImageAdapter getNextFrame() {
+        return getCachedFrame(this.cachedKey + this.n);
     }
 
-    public ImageAdapter getFrame(int n) {
-        return this.images[n];
+    public synchronized SingleImageAdapter getCachedFrame(int i) {
+        return this.cachedImages.get(i);
     }
 
-    public Dimension getFrameSize() {
-        return this.decoder.getFrameSize();
+    public int getNextDelay() {
+        return this.getCachedDelay(this.n);
+    }
+
+    public int getDelay(int i) {
+        return this.delays[i];
+    }
+
+    public int getCachedDelay(int i) {
+        return this.delays[this.cachedKey + i];
     }
 
     public void next() {
-        this.n++;
-        if (this.n == this.count) {
+        if (this.n++ == maxIndex) {
             this.n = 0;
+            Server.getInstance().getScheduler().scheduleAsyncTask(MyMap.getInstance(), new AsyncTask() {
+                @Override
+                public void onRun() {
+                    try {
+                        updateCache(CACHE_SIZE);
+                    } catch (IOException e) {
+                        MyMap.getInstance().getLogger().error("加载图片时遇到错误", e);
+                    }
+                }
+            });
         }
-    }
-
-    public final List<Vector2> crop(int width) {
-        int xCount = this.images[0].getImage().getWidth() / width;
-        int yCount = this.images[0].getImage().getHeight() / width;
-        List<Vector2> list = new ArrayList<>(xCount * yCount);
-        for (int x = 0; x < xCount; x++) {
-            for (int y = 0; y < yCount; y++) {
-                list.add(new Vector2(x, y));
-            }
-        }
-        return list;
-    }
-
-    @Override
-    public Map<Vector2, BufferedImage> cropAsSubImages(int width) {
-        throw new UnsupportedOperationException();
     }
 }

@@ -11,8 +11,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.ConfigSection;
 import com.him188.mymap.event.FrameImageChangeEvent;
+import com.him188.mymap.executable.AsyncImageUpdateTask;
 import com.him188.mymap.image.ImageUpdater;
-import com.him188.mymap.task.AsyncImageUpdateTask;
 import com.him188.mymap.utils.Utils;
 
 import java.io.File;
@@ -55,7 +55,7 @@ public class MyMapFrame {
         this.endPos = endPos;
         this.face = face;
         Utils.analyzeVector3(this.startPos, this.endPos, this.getFace());
-        this.imageFile = imageFile == null ? DEFAULT_IMAGE_FILE : Utils.defineFile(imageFile.getPath());
+        this.imageFile = imageFile == null ? DEFAULT_IMAGE_FILE : Utils.detectImageFile(imageFile.getPath());
 
         this.level = level;
         initImageUpdater();
@@ -66,9 +66,11 @@ public class MyMapFrame {
 
     private void initImageUpdater() throws IOException {
         this.imageFile = this.imageFile == null ? DEFAULT_IMAGE_FILE : this.imageFile;
+        if (this.imageUpdater != null) {
+            this.imageUpdater.close();
+        }
         this.imageUpdater = ImageUpdater.getImageUpdater(this.startPos, this.endPos, this.level, this.face, this.imageFile);
     }
-
 
     public void save() {
         this.config.set("id", id);

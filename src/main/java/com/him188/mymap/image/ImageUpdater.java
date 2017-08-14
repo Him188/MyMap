@@ -1,10 +1,16 @@
 package com.him188.mymap.image;
 
+import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityItemFrame;
+import cn.nukkit.item.ItemMap;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
 import com.him188.mymap.adapter.ImageAdapter;
+import com.him188.mymap.utils.Utils;
 import com.sun.imageio.plugins.gif.GIFImageReader;
 
 import javax.imageio.ImageIO;
@@ -14,16 +20,25 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Him188 @ MyMap Project
  */
 public abstract class ImageUpdater {
-    public static final int SUB_IMAGE_WIDTH = 128; //map width
+    protected static final int SUB_IMAGE_WIDTH = 128; //map width
+    protected static final double VIEW_DISTANCE = 20;
 
     public static ImageUpdater getImageUpdater(Vector3 start, Vector3 end, Level level, BlockFace face, File file) throws IOException {
+        Objects.requireNonNull(file, "file");
+        if (file.isDirectory()) {
+            return new DynamicImageUpdater(start, end, level, face, file);
+        }
+
         if (isGIF(new FileInputStream(file))) {
-            DynamicImageUpdater updater = new DynamicImageUpdater(start, end, level, face, file);
+            GIFImageUpdater updater = new GIFImageUpdater(start, end, level, face, file);
             if (updater.getImageAdapter().getFrameCount() != 1) {
                 return updater;
             }
@@ -59,13 +74,99 @@ public abstract class ImageUpdater {
         }
         this.yBlockCount = (int) Math.abs(this.start.y - this.end.y) + 1;
 
-        this.imageAdapter = initImageAdapter(file); // TODO: 2017/8/10 选择适应方式
+        this.imageAdapter = initImageAdapter(file);
     }
 
     public abstract ImageAdapter initImageAdapter(File file) throws IOException;
 
     public abstract void update();
 
+    /**
+     * @see BlockEntityItemFrame#getId()
+     * @see ClientboundMapItemDataPacket
+     */
+    private final Map<Long, ClientboundMapItemDataPacket> cachedMaps = new ConcurrentHashMap<>();
+    /**
+     * @see Utils#hash(Vector2)
+     * @see BlockEntityItemFrame#getId()
+     */
+    private Map<Long, Long> blockEntities = new ConcurrentHashMap<>();
+    /**
+     * @see Utils#hash(Vector2)
+     * @see ItemMap#getMapId()
+     */
+    private Map<Long, Long> maps = new ConcurrentHashMap<>();
+
+    protected final void updatePacketCache(long blockEntityId, ClientboundMapItemDataPacket packet) {
+        this.cachedMaps.put(blockEntityId, packet);
+    }
+
+    protected final void initMapCache() {
+        this.maps.clear();
+        this.blockEntities.clear();
+    }
+
+    protected final long updateMapCacheBlock(Vector2 vector2) {
+        ItemMap map = Utils.newMap();
+        long blockEntityId = Utils.setItemMapToLevel(this.level, this.face, map, calculatePos(vector2));
+        long positionHash = Utils.hash(vector2);
+        this.maps.put(positionHash, map.getMapId());
+        this.blockEntities.put(positionHash, blockEntityId);
+        return positionHash;
+    }
+
+    protected final long getBlockEntityId(long hash) {
+        return this.blockEntities.get(hash);
+    }
+
+    protected final long getMapId(long hash) {
+        return this.maps.get(hash);
+    }
+
+    protected final boolean isValid(long hash) {
+        return this.maps.containsKey(hash) && this.blockEntities.containsKey(hash);
+    }
+
+    public final boolean containsMapIdCache(long id) {
+        return this.maps.containsValue(id);
+    }
+
+    public final boolean containsBlockEntityIdCache(long id) {
+        return this.blockEntities.containsValue(id);
+    }
+
+    public final void requestUpdate(Player player, Level level, boolean ignoreViewingDistance) {
+        final BlockEntity[] list = level.getBlockEntities().values().toArray(new BlockEntity[0]);
+        if (ignoreViewingDistance) {
+            for (BlockEntity blockEntity : list) {
+                if (this.cachedMaps.containsKey(blockEntity.getId())) {
+                    player.dataPacket(this.cachedMaps.get(blockEntity.getId()));
+                }
+            }
+        } else {
+            for (BlockEntity blockEntity : list) {
+                if (this.cachedMaps.containsKey(blockEntity.getId()) && blockEntity.distance(player) < VIEW_DISTANCE) {
+                    player.dataPacket(this.cachedMaps.get(blockEntity.getId()));
+                }
+            }
+        }
+    }
+
+    public final void requestUpdate(Player[] players, Level level, boolean ignoreViewingDistance) {
+        for (Player player : players) {
+            this.requestUpdate(player, level, ignoreViewingDistance);
+        }
+    }
+
+    public final void requestUpdate(Player[] players, boolean ignoreViewingDistance) {
+        for (Player player : players) {
+            this.requestUpdate(player, player.getLevel(), ignoreViewingDistance);
+        }
+    }
+
+    public final void requestUpdate(Player player, boolean ignoreViewingDistance) {
+        this.requestUpdate(player, player.getLevel(), ignoreViewingDistance);
+    }
 
     public int getXBlockCount() {
         return xBlockCount;
@@ -112,5 +213,11 @@ public abstract class ImageUpdater {
         }
         return pos;
         //return pos.subtract(0, 1, 0);
+    }
+
+    public void close() {
+        this.blockEntities.clear();
+        this.maps.clear();
+        this.cachedMaps.clear();
     }
 }

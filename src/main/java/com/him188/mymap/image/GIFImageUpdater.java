@@ -3,35 +3,38 @@ package com.him188.mymap.image;
 import cn.nukkit.Player;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import com.him188.mymap.MyMap;
-import com.him188.mymap.adapter.ResizeDynamicImageAdapter;
+import com.him188.mymap.adapter.ResizeGIFImageAdapter;
 import com.him188.mymap.adapter.SingleImageAdapter;
 import com.him188.mymap.executable.DynamicPlayer;
 import com.him188.mymap.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Him188 @ MyMap Project
  */
-public class DynamicImageUpdater extends ImageUpdater {
+public class GIFImageUpdater extends ImageUpdater {
+    private final double VIEW_DISTANCE = 20;
 
     private DynamicPlayer task;
 
-    public DynamicImageUpdater(Vector3 start, Vector3 end, Level level, BlockFace face, File imageDirectory) throws IOException {
-        super(start, end, level, face, imageDirectory);
+    public GIFImageUpdater(Vector3 start, Vector3 end, Level level, BlockFace face, File imageFile) throws IOException {
+        super(start, end, level, face, imageFile);
     }
 
     @Override
-    public ResizeDynamicImageAdapter getImageAdapter() {
-        return (ResizeDynamicImageAdapter) super.getImageAdapter();
+    public ResizeGIFImageAdapter getImageAdapter() {
+        return (ResizeGIFImageAdapter) super.getImageAdapter();
     }
 
     @Override
-    public ResizeDynamicImageAdapter initImageAdapter(File file) throws IOException {
-        ResizeDynamicImageAdapter adapter = new ResizeDynamicImageAdapter(file);
+    public ResizeGIFImageAdapter initImageAdapter(File file) throws IOException {
+        ResizeGIFImageAdapter adapter = new ResizeGIFImageAdapter(file);
 
         adapter.doAdaptation(this.getXBlockCount() * SUB_IMAGE_WIDTH, this.getYBlockCount() * SUB_IMAGE_WIDTH);
         return adapter;
@@ -48,12 +51,12 @@ public class DynamicImageUpdater extends ImageUpdater {
         task = new DynamicPlayer() {
             @Override
             public int nextDelay() {
-                return getImageAdapter().getNextDelay();
+                return getImageAdapter().getDelay();
             }
 
             @Override
             public void callback() {
-                SingleImageAdapter adapter = getImageAdapter().getNextFrame();
+                SingleImageAdapter adapter = getImageAdapter().getFrame();
                 updateMaps(adapter);
                 getImageAdapter().next();
             }
@@ -62,29 +65,20 @@ public class DynamicImageUpdater extends ImageUpdater {
         task.start();
     }
 
-    /**
-     * 将展示框放置到地图, 并更新第一帧到缓存
-     */
     private void updateBlocks() {
         initMapCache();
-        final Player[] players = getLevel().getPlayers().values().toArray(new Player[0]);
-        this.getImageAdapter().getCachedFrame(0).cropAsSubImages(SUB_IMAGE_WIDTH).forEach((vector2, image) -> {
-            long hash = this.updateMapCacheBlock(vector2);
-            this.updatePacketCache(this.getBlockEntityId(hash), Utils.getClientboundMapItemDataPacket(image, this.getMapId(hash)));
-            this.requestUpdate(players, false);
-        });
+        List<Vector2> result = this.getImageAdapter().crop(SUB_IMAGE_WIDTH);
+        for (Vector2 vector2 : result) {
+            this.updateMapCacheBlock(vector2);
+        }
     }
-    // TODO: 2017/8/14 更改:  ImageUpdater中 (abstract?) updateBlocks, (abstract?) updateMaps. 或者写 MultiImageUpdater 让 dynamic 和 gif继承 ?
 
-    /**
-     * 将展示框放置到地图, 并更新第一帧到缓存
-     */
     private void updateMaps(SingleImageAdapter adapter) {
         final Player[] players = getLevel().getPlayers().values().toArray(new Player[0]);
         adapter.cropAsSubImages(SUB_IMAGE_WIDTH).forEach((vector2, image) -> {
             long hash = Utils.hash(vector2);
             if (!this.isValid(hash)) {
-                MyMap.getInstance().getLogger().error("更换图片时出现错误: 帧找不到有效地图");
+                MyMap.getInstance().getLogger().error("播放 GIF 时出现错误: 帧找不到有效地图");
                 return;
             }
             long mapId = this.getMapId(hash);

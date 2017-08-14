@@ -1,10 +1,15 @@
 package com.him188.mymap;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.entity.EntityLevelChangeEvent;
+import cn.nukkit.event.player.PlayerJoinEvent;
+import cn.nukkit.event.server.DataPacketReceiveEvent;
+import cn.nukkit.network.protocol.MapInfoRequestPacket;
+import cn.nukkit.scheduler.AsyncTask;
 
 /**
  * 用于画框更新等的普通事件监听器
@@ -21,7 +26,38 @@ public class CommonListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onLevelChange(EntityLevelChangeEvent event) {
         if (event.getEntity() instanceof Player) {
+            Server.getInstance().getScheduler().scheduleAsyncTask(this.plugin, new AsyncTask() {
+                @Override
+                public void onRun() {
+                    for (MyMapFrame frame : MyMap.getInstance().getList()) {
+                        frame.getImageUpdater().requestUpdate((Player) event.getEntity(), event.getTarget(), true);
+                    }
+                }
+            });
+        }
+    }
 
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onJoin(PlayerJoinEvent event) {
+        Server.getInstance().getScheduler().scheduleAsyncTask(this.plugin, new AsyncTask() {
+            @Override
+            public void onRun() {
+                for (MyMapFrame frame : MyMap.getInstance().getList()) {
+                    frame.getImageUpdater().requestUpdate(event.getPlayer(), true);
+                }
+            }
+        });
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPacketReceive(DataPacketReceiveEvent event) {
+        if (event.getPacket() instanceof MapInfoRequestPacket) {
+            for (MyMapFrame frame : MyMap.getInstance().getList()) {
+                if (frame.getImageUpdater().containsMapIdCache(((MapInfoRequestPacket) event.getPacket()).mapId)) {
+                    event.setCancelled();
+                    return;
+                }
+            }
         }
     }
 }

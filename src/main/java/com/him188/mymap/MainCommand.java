@@ -109,7 +109,7 @@ public final class MainCommand extends PluginCommand<MyMap> implements CommandEx
                     return true;
                 }
 
-                File file = Utils.defineFile(new File(MyMapFrame.IMAGE_DATA_FOLDER, args[2]).getPath());
+                File file = Utils.detectImageFile(new File(MyMapFrame.IMAGE_DATA_FOLDER, args[2]).getPath());
                 if (file == null) {
                     sender.sendMessage(TextFormat.RED + "文件 " + args[2] + " 不存在. 请设置位于 " + MyMapFrame.IMAGE_DATA_FOLDER + " 目录下的文件名. 后缀自动检测(支持jpg,gif(包括动态),bmp,webp,png)");
                     return true;
