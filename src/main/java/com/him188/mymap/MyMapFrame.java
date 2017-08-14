@@ -49,6 +49,8 @@ public class MyMapFrame {
     private final Config config;
     private final File configFile;
 
+    private final Vector3[] blocks;
+
     public MyMapFrame(String id, Vector3 startPos, Vector3 endPos, Level level, BlockFace face, File imageFile) throws IOException {
         this.id = id;
         this.startPos = startPos;
@@ -62,6 +64,27 @@ public class MyMapFrame {
         this.configFile = new File(MyMapFrame.FRAME_DATA_FOLDER, this.getId() + ".yml");
         this.config = new Config(configFile, Config.YAML);
         this.updateImage(false);
+
+        this.blocks = new Vector3[this.getImageUpdater().getXBlockCount() * this.getImageUpdater().getYBlockCount()];
+
+        Vector3 v = this.startPos.clone();
+
+        Vector3 min = new Vector3(Math.min(this.startPos.x, this.endPos.x), Math.min(this.startPos.y, this.endPos.y), Math.min(this.startPos.z, this.endPos.z));
+        Vector3 max = new Vector3(Math.max(v.x, this.endPos.x), Math.max(v.y, this.endPos.y), Math.max(v.z, this.endPos.z));
+        Vector3 subtract = max.subtract(min).floor();
+        int i = 0;
+        for (int x = 0; x <= subtract.getX(); x++) {
+            for (int y = 0; y <= subtract.getY(); y++) {
+                for (int z = 0; z <= subtract.getZ(); z++) {
+                    Vector3 pos = min.add(x, y, z);
+                    this.blocks[i++] = pos;
+                }
+            }
+        }
+    }
+
+    public Vector3[] getBlocks() {
+        return blocks;
     }
 
     private void initImageUpdater() throws IOException {

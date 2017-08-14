@@ -9,6 +9,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
+import com.him188.mymap.MyMap;
+import com.him188.mymap.MyMapFrame;
 import com.him188.mymap.adapter.ImageAdapter;
 import com.him188.mymap.utils.Utils;
 import com.sun.imageio.plugins.gif.GIFImageReader;
@@ -34,6 +36,10 @@ public abstract class ImageUpdater {
     public static ImageUpdater getImageUpdater(Vector3 start, Vector3 end, Level level, BlockFace face, File file) throws IOException {
         Objects.requireNonNull(file, "file");
         if (file.isDirectory()) {
+            if (isDirectoryEmpty(file)) {
+                throw new IOException("directory is empty");
+            }
+
             return new DynamicImageUpdater(start, end, level, face, file);
         }
 
@@ -45,6 +51,11 @@ public abstract class ImageUpdater {
         }
 
         return new StaticImageUpdater(start, end, level, face, file);
+    }
+
+    private static boolean isDirectoryEmpty(File file) {
+        File[] files = file.listFiles();
+        return files == null || files.length == 0;
     }
 
     private static boolean isGIF(InputStream stream) {
@@ -135,7 +146,21 @@ public abstract class ImageUpdater {
         return this.blockEntities.containsValue(id);
     }
 
-    public final void requestUpdate(Player player, Level level, boolean ignoreViewingDistance) {
+    public final void requestBlockUpdate(Player player, Level level) {
+        for (MyMapFrame frame : MyMap.getInstance().getList().toArray(new MyMapFrame[0])) {
+            level.sendBlocks(new Player[]{player}, frame.getBlocks());
+        }
+    }
+
+    public final void requestMapUpdate(Player player, long map_uuid) {
+        for (ClientboundMapItemDataPacket packet : this.cachedMaps.values()) {
+            if (packet.mapId == map_uuid) {
+                player.dataPacket(packet);
+            }
+        }
+    }
+
+    public final void requestMapUpdate(Player player, Level level, boolean ignoreViewingDistance) {
         final BlockEntity[] list = level.getBlockEntities().values().toArray(new BlockEntity[0]);
         if (ignoreViewingDistance) {
             for (BlockEntity blockEntity : list) {
@@ -152,20 +177,20 @@ public abstract class ImageUpdater {
         }
     }
 
-    public final void requestUpdate(Player[] players, Level level, boolean ignoreViewingDistance) {
+    public final void requestMapUpdate(Player[] players, Level level, boolean ignoreViewingDistance) {
         for (Player player : players) {
-            this.requestUpdate(player, level, ignoreViewingDistance);
+            this.requestMapUpdate(player, level, ignoreViewingDistance);
         }
     }
 
-    public final void requestUpdate(Player[] players, boolean ignoreViewingDistance) {
+    public final void requestMapUpdate(Player[] players, boolean ignoreViewingDistance) {
         for (Player player : players) {
-            this.requestUpdate(player, player.getLevel(), ignoreViewingDistance);
+            this.requestMapUpdate(player, player.getLevel(), ignoreViewingDistance);
         }
     }
 
-    public final void requestUpdate(Player player, boolean ignoreViewingDistance) {
-        this.requestUpdate(player, player.getLevel(), ignoreViewingDistance);
+    public final void requestMapUpdate(Player player, boolean ignoreViewingDistance) {
+        this.requestMapUpdate(player, player.getLevel(), ignoreViewingDistance);
     }
 
     public int getXBlockCount() {

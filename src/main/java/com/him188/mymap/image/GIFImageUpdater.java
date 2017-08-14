@@ -84,7 +84,7 @@ public class GIFImageUpdater extends ImageUpdater {
             long mapId = this.getMapId(hash);
             long blockEntityId = this.getBlockEntityId(hash);
             this.updatePacketCache(blockEntityId, Utils.getClientboundMapItemDataPacket(image, mapId));
-            this.requestUpdate(players, false);
+            this.requestMapUpdate(players, false);
         });
     }
 

@@ -71,7 +71,7 @@ public class DynamicImageUpdater extends ImageUpdater {
         this.getImageAdapter().getCachedFrame(0).cropAsSubImages(SUB_IMAGE_WIDTH).forEach((vector2, image) -> {
             long hash = this.updateMapCacheBlock(vector2);
             this.updatePacketCache(this.getBlockEntityId(hash), Utils.getClientboundMapItemDataPacket(image, this.getMapId(hash)));
-            this.requestUpdate(players, false);
+            this.requestMapUpdate(players, false);
         });
     }
     // TODO: 2017/8/14 更改:  ImageUpdater中 (abstract?) updateBlocks, (abstract?) updateMaps. 或者写 MultiImageUpdater 让 dynamic 和 gif继承 ?
@@ -90,7 +90,7 @@ public class DynamicImageUpdater extends ImageUpdater {
             long mapId = this.getMapId(hash);
             long blockEntityId = this.getBlockEntityId(hash);
             this.updatePacketCache(blockEntityId, Utils.getClientboundMapItemDataPacket(image, mapId));
-            this.requestUpdate(players, false);
+            this.requestMapUpdate(players, false);
         });
     }
 

@@ -16,7 +16,7 @@ import cn.nukkit.scheduler.AsyncTask;
  *
  * @author Him188 @ MyMap Project
  */
-public class CommonListener implements Listener {
+public final class CommonListener implements Listener {
     private final MyMap plugin;
 
     CommonListener(MyMap plugin) { // TODO: 2017/8/11 remove this
@@ -30,7 +30,8 @@ public class CommonListener implements Listener {
                 @Override
                 public void onRun() {
                     for (MyMapFrame frame : MyMap.getInstance().getList()) {
-                        frame.getImageUpdater().requestUpdate((Player) event.getEntity(), event.getTarget(), true);
+                        frame.getImageUpdater().requestBlockUpdate((Player) event.getEntity(), event.getTarget());
+                        frame.getImageUpdater().requestMapUpdate((Player) event.getEntity(), event.getTarget(), true);
                     }
                 }
             });
@@ -43,7 +44,8 @@ public class CommonListener implements Listener {
             @Override
             public void onRun() {
                 for (MyMapFrame frame : MyMap.getInstance().getList()) {
-                    frame.getImageUpdater().requestUpdate(event.getPlayer(), true);
+                    frame.getImageUpdater().requestBlockUpdate(event.getPlayer(), event.getPlayer().getLevel());
+                    frame.getImageUpdater().requestMapUpdate(event.getPlayer(), true);
                 }
             }
         });
@@ -55,6 +57,7 @@ public class CommonListener implements Listener {
             for (MyMapFrame frame : MyMap.getInstance().getList()) {
                 if (frame.getImageUpdater().containsMapIdCache(((MapInfoRequestPacket) event.getPacket()).mapId)) {
                     event.setCancelled();
+                    frame.getImageUpdater().requestMapUpdate(event.getPlayer(), ((MapInfoRequestPacket) event.getPacket()).mapId);
                     return;
                 }
             }
