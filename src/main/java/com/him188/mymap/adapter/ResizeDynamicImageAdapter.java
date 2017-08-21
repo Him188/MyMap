@@ -85,7 +85,7 @@ public class ResizeDynamicImageAdapter extends ImageAdapter {
         }
 
         try {
-            return Integer.parseInt(strings[1]);
+            return (int) Double.parseDouble(strings[1]);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException ignored) {
             return DEFAULT_DELAY;
         }
