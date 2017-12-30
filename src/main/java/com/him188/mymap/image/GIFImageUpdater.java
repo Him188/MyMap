@@ -19,7 +19,6 @@ import java.util.List;
  * @author Him188 @ MyMap Project
  */
 public class GIFImageUpdater extends ImageUpdater {
-    private final double VIEW_DISTANCE = 20;
 
     private DynamicPlayer task;
 
