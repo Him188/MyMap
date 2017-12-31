@@ -76,7 +76,7 @@ public class GIFImageUpdater extends ImageUpdater {
         final Player[] players = getLevel().getPlayers().values().toArray(new Player[0]);
         adapter.cropAsSubImages(SUB_IMAGE_WIDTH).forEach((vector2, image) -> {
             long hash = Utils.hash(vector2);
-            if (!this.isValid(hash)) {
+            if (this.isInvalid(hash)) {
                 MyMap.getInstance().getLogger().error("播放 GIF 时出现错误: 帧找不到有效地图");
                 return;
             }

@@ -13,9 +13,9 @@ import com.him188.mymap.MyMap;
 import com.him188.mymap.MyMapFrame;
 import com.him188.mymap.adapter.ImageAdapter;
 import com.him188.mymap.utils.Utils;
-import com.sun.imageio.plugins.gif.GIFImageReader;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -59,8 +59,8 @@ public abstract class ImageUpdater {
     }
 
     private static boolean isGIF(InputStream stream) {
-        Iterator itr = ImageIO.getImageReaders(new MemoryCacheImageInputStream(stream));
-        return itr.hasNext() && itr.next() instanceof GIFImageReader;
+        Iterator<ImageReader> itr = ImageIO.getImageReaders(new MemoryCacheImageInputStream(stream));
+        return itr.hasNext() && itr.next().getClass().getSimpleName().equals("GIFImageReader"); //is that alright?
     }
 
     protected final int xBlockCount;
@@ -134,8 +134,13 @@ public abstract class ImageUpdater {
         return this.maps.get(hash);
     }
 
+    @SuppressWarnings("unused")
     protected final boolean isValid(long hash) {
-        return this.maps.containsKey(hash) && this.blockEntities.containsKey(hash);
+        return !isInvalid(hash);
+    }
+
+    protected final boolean isInvalid(long hash) {
+        return !this.maps.containsKey(hash) || !this.blockEntities.containsKey(hash);
     }
 
     public final boolean containsMapIdCache(long id) {
