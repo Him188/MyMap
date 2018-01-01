@@ -29,11 +29,11 @@ public class ResizeDynamicImageAdapter extends ImageAdapter {
     private int adaptationHeight;
     private int maxIndex;
 
-    public ResizeDynamicImageAdapter(File file) throws IOException {
+    public ResizeDynamicImageAdapter(File file) {
         setImage(file);
     }
 
-    public void setImage(File imageDirectory) throws IOException {
+    public void setImage(File imageDirectory) {
         this.imageDirectory = Objects.requireNonNull(imageDirectory, "imageDirectory");
         if (!imageDirectory.isDirectory()) {
             throw new IllegalArgumentException("file is not directory");

@@ -13,11 +13,11 @@ public class CropImageAdapter extends SingleImageAdapter {
         super(image);
     }
 
-    public CropImageAdapter(BufferedImage image) throws IOException {
+    public CropImageAdapter(BufferedImage image) {
         super(image);
     }
     @Override
-    public void doAdaptation(int width, int height) throws IOException {
+    public void doAdaptation(int width, int height) {
         BufferedImage result = new BufferedImage(width, height, this.getImage().getType());
         Graphics2D g = result.createGraphics();
         g.drawImage(this.getImage(), 0, 0, this.getImage().getWidth(), this.getImage().getHeight(), null);

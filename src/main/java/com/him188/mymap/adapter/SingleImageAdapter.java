@@ -20,7 +20,7 @@ public abstract class SingleImageAdapter extends ImageAdapter {
         setImage(image);
     }
 
-    protected SingleImageAdapter(BufferedImage image) throws IOException {
+    protected SingleImageAdapter(BufferedImage image) {
         setImage(image);
     }
 

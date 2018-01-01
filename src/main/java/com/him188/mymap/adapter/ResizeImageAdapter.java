@@ -13,12 +13,12 @@ public class ResizeImageAdapter extends SingleImageAdapter {
         super(image);
     }
 
-    public ResizeImageAdapter(BufferedImage image) throws IOException {
+    public ResizeImageAdapter(BufferedImage image) {
         super(image);
     }
 
     @Override
-    public void doAdaptation(int width, int height) throws IOException {
+    public void doAdaptation(int width, int height) {
         BufferedImage result = new BufferedImage(width, height, this.getImage().getType());
         Graphics2D g = result.createGraphics();
         g.drawImage(this.getImage(), 0, 0, width, height, null);
