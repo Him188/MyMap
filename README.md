@@ -1,6 +1,6 @@
 # MyMap
 
-MyMap plugin for Nukkit. Show your gif image on the server!
+MyMap plugin for [Nukkit](https://github.com/nukkit/nukkit). Show your gif image on the server!
 
 ## Description
 
