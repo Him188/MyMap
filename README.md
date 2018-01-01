@@ -33,7 +33,8 @@ Screenshots is in the end.
   Examples:
   - pic-3000.jpg  displays 3000ms = 3s
   - img-500.png  displays 500ms = 0.5s
-  - -3000.bmp  displays 3000ms = 3s  
+  - -3000.bmp  displays 3000ms = 3s
+
   PS: If filename has no or more than 1 "-", or the number is invalid(negative), it will use default display time 3000ms=3s.
 
 ## Screenshots
