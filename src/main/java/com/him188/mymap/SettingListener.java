@@ -8,12 +8,14 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.TextFormat;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.him188.mymap.utils.LanguageBase.ID.*;
+import static com.him188.mymap.utils.LanguageBase.getMessage;
 
 /**
  * 用于设置画框的事件监听器
@@ -95,24 +97,24 @@ public final class SettingListener implements Listener {
                     data.startPos = event.getBlock();
                     data.level = event.getBlock().getLevel();
                     data.step = Step.SET_END_POS;
-                    event.getPlayer().sendMessage(TextFormat.AQUA + "请点击另一个点以确定一个矩形框. 请保证矩形框只有一格宽度");
+                    event.getPlayer().sendMessage(getMessage(SET_END_POS));
                     return;
                 }
 
                 case SET_END_POS: {
                     if (data.level.getId() != event.getBlock().getLevel().getId()) {
-                        event.getPlayer().sendMessage(TextFormat.RED + "请点击同一个世界内的方块. 本次操作已取消");
+                        event.getPlayer().sendMessage(getMessage(TOUCH_THE_SAME_WORLD));
                         removeSettingPlayer(event.getPlayer());
                         return;
                     }
                     data.endPos = event.getBlock();
                     if (!data.checkPos()) {
-                        event.getPlayer().sendMessage(TextFormat.RED + "请设置宽度为1的矩形框. 本次操作已取消");
+                        event.getPlayer().sendMessage(getMessage(WRONG_WIDTH));
                         removeSettingPlayer(event.getPlayer());
                         return;
                     }
                     data.step = Step.SET_FACE;
-                    event.getPlayer().sendMessage(TextFormat.AQUA + "请点击需要显示面");
+                    event.getPlayer().sendMessage(getMessage(TOUCH_FACE));
                     return;
                 }
 
@@ -121,21 +123,21 @@ public final class SettingListener implements Listener {
                     removeSettingPlayer(event.getPlayer());
                     try {
                         if (!plugin.addFrame(data.toFrame())) {
-                            event.getPlayer().sendMessage(TextFormat.RED + "操作被意外终止");
+                            event.getPlayer().sendMessage(getMessage(OPTION_CANCELLED));
                             return;
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
-                        event.getPlayer().sendMessage(TextFormat.RED + "无法读取默认图片, 添加失败. 请放置 default.* 至 " + MyMapFrame.IMAGE_DATA_FOLDER);
+                        event.getPlayer().sendMessage(getMessage(CAN_NOT_READ_DEFAULT));
                         return;
                     }
-                    event.getPlayer().sendMessage(TextFormat.AQUA + "添加成功");
+                    event.getPlayer().sendMessage(getMessage(ADD_DONE));
                     return;
                 }
 
                 default: {
                     removeSettingPlayer(event.getPlayer());
-                    event.getPlayer().sendMessage(TextFormat.RED + "无效操作");
+                    event.getPlayer().sendMessage(getMessage(OPTION_INVALID));
                 }
             }
         }

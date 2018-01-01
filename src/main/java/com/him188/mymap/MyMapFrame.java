@@ -13,6 +13,7 @@ import cn.nukkit.utils.ConfigSection;
 import com.him188.mymap.event.FrameImageChangeEvent;
 import com.him188.mymap.executable.AsyncImageUpdateTask;
 import com.him188.mymap.image.ImageUpdater;
+import com.him188.mymap.utils.LanguageBase;
 import com.him188.mymap.utils.Utils;
 
 import java.io.File;
@@ -186,7 +187,7 @@ public class MyMapFrame {
             if (!this.configFile.delete()) {
                 this.config.setAll(new ConfigSection());
                 this.config.save();
-                MyMap.getInstance().getLogger().error("无法删除 " + this.getId() + " 的配置文件.");
+                MyMap.getInstance().getLogger().error(LanguageBase.getMessage(LanguageBase.ID.CAN_NOT_DELETE_CONFIG, this.getId()));
             }
         }
 

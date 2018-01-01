@@ -7,6 +7,7 @@ import cn.nukkit.utils.Config;
 import com.him188.mymap.event.FrameAddEvent;
 import com.him188.mymap.event.FrameRemoveEvent;
 import com.him188.mymap.utils.FrameList;
+import com.him188.mymap.utils.LanguageBase;
 import com.him188.mymap.utils.Utils;
 
 import java.io.File;
@@ -74,6 +75,15 @@ public final class MyMap extends PluginBase {
         MyMapFrame.FRAME_DATA_FOLDER.mkdir();
         saveResource("default.jpg", "images/default.jpg", false);
 
+        saveDefaultConfig();
+        reloadConfig();
+        String language = getConfig().get("language", "english");
+        if ("chinese".equalsIgnoreCase(language) || "chs".equalsIgnoreCase(language) || "中文".equals(language)) {
+            LanguageBase.CURRENT_LANGUAGE = LanguageBase.CHINESE;
+        } else {
+            LanguageBase.CURRENT_LANGUAGE = LanguageBase.ENGLISH;
+        }
+
         list = new FrameList();
 
         File[] files = MyMapFrame.FRAME_DATA_FOLDER.listFiles();
@@ -82,7 +92,7 @@ public final class MyMap extends PluginBase {
                 try {
                     list.add(MyMapFrame.fromConfigSection(new Config(file, Config.YAML).getRootSection()));
                 } catch (IOException e) {
-                    getLogger().error("加载画框 " + file.getName() + " 时遇到错误", e);
+                    getLogger().error(LanguageBase.getMessage(LanguageBase.ID.LOAD_FRAME_ERROR, file.getName()), e);
                 }
             }
         }

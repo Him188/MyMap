@@ -19,15 +19,15 @@ Screenshots is in the end.
 
 ## Tips
 
-- If you want to change the picture, just use command `/mymap
-   setpicture <id> <imageFile>` again.
+- If you want to change the picture, just use command `/mymap setpicture <id> <imageFile>` again.
 - An OP can long-touch(Left-click for Win10) a frame to look up id of the frame.
+- This plugin supports languages in 简体中文(Chinese Simplified) and English
 
 ## Q&A
 
 - How to set GIF image?  
   The same way as static images.
-- How to set Multi images?
+- How to set Multi images?  
   Create a folder under plugins/MyMap/images, put images in it.(Needs static picture, dynamic GIF only displays the first frame).  
   Name of picture decides how long to display. (Not included the suffix, explodes by "-", the last one is the display time)  
   Examples:

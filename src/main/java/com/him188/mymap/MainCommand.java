@@ -6,12 +6,14 @@ import cn.nukkit.command.CommandExecutor;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.PluginCommand;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.utils.TextFormat;
 import com.him188.mymap.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+
+import static com.him188.mymap.utils.LanguageBase.ID.*;
+import static com.him188.mymap.utils.LanguageBase.getMessage;
 
 /**
  * @author Him188 @ MyMap Project
@@ -19,7 +21,7 @@ import java.util.HashMap;
 public final class MainCommand extends PluginCommand<MyMap> implements CommandExecutor {
     public MainCommand(String name, MyMap owner) {
         super(name, owner);
-        setCommandParameters(new HashMap<String, CommandParameter[]>() {
+        setCommandParameters(new HashMap<>() {
             {
                 put("set", new CommandParameter[]{
                         new CommandParameter("arg", new String[]{"set", "add"}),
@@ -58,17 +60,17 @@ public final class MainCommand extends PluginCommand<MyMap> implements CommandEx
 
                     if (SettingListener.isSettingPlayer((Player) sender)) {
                         SettingListener.removeSettingPlayer((Player) sender);
-                        sender.sendMessage(TextFormat.AQUA + "已取消设置");
+                        sender.sendMessage(getMessage(SET_HAS_BEEN_CANCELED));
                         return true;
                     }
 
                     if (getPlugin().getList().getById(args[1]) != null) {
-                        sender.sendMessage(TextFormat.RED + "此 ID 的画框已经存在了");
+                        sender.sendMessage(getMessage(FRAME_IS_EXISTS));
                         return true;
                     }
 
                     SettingListener.addSettingPlayer((Player) sender, args[1]);
-                    sender.sendMessage(TextFormat.AQUA + "开始设置, 请点击一个点, 这个点将作为矩形画框起始点");
+                    sender.sendMessage(getMessage(SET_START));
                     return true;
                 }
             }
@@ -82,16 +84,16 @@ public final class MainCommand extends PluginCommand<MyMap> implements CommandEx
 
                 MyMapFrame frame = getPlugin().getList().getById(args[1]);
                 if (frame == null) {
-                    sender.sendMessage(TextFormat.RED + "ID为 " + args[1] + " 的画框不存在");
+                    sender.sendMessage(getMessage(FRAME_DOES_NOT_EXISTS, args[1]));
                     return true;
                 }
 
                 if (!getPlugin().removeFrame(frame)) {
-                    sender.sendMessage(TextFormat.RED + "操作被意外终止");
+                    sender.sendMessage(getMessage(OPTION_CANCELLED));
                     return true;
                 }
 
-                sender.sendMessage(TextFormat.AQUA + "删除成功");
+                sender.sendMessage(getMessage(SUCCESSFULLY_DELETED));
                 return true;
             }
 
@@ -105,29 +107,29 @@ public final class MainCommand extends PluginCommand<MyMap> implements CommandEx
 
                 MyMapFrame frame = getPlugin().getList().getById(args[1]);
                 if (frame == null) {
-                    sender.sendMessage(TextFormat.RED + "ID为 " + args[1] + " 的画框不存在");
+                    sender.sendMessage(getMessage(FRAME_DOES_NOT_EXISTS, args[1]));
                     return true;
                 }
 
                 File file = Utils.detectImageFile(new File(MyMapFrame.IMAGE_DATA_FOLDER, args[2]).getPath());
                 if (file == null) {
-                    sender.sendMessage(TextFormat.RED + "文件 " + args[2] + " 不存在. 请设置位于 " + MyMapFrame.IMAGE_DATA_FOLDER + " 目录下的文件名. 后缀自动检测(支持jpg,gif(包括动态),bmp,webp,png)");
+                    sender.sendMessage(getMessage(FILE_DOES_NOT_EXISTS, args[2]));
                     return true;
                 }
 
                 try {
                     if (!frame.setImageFile(file)) {
-                        sender.sendMessage(TextFormat.RED + "操作被意外终止");
+                        sender.sendMessage(getMessage(OPTION_CANCELLED));
                         return true;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                    sender.sendMessage(TextFormat.RED + "文件无法读取. 请更换图片");
+                    sender.sendMessage(getMessage(FILE_CAN_NOT_READ));
                     return true;
                 }
                 frame.save();
 
-                sender.sendMessage(TextFormat.AQUA + "设置成功");
+                sender.sendMessage(getMessage(SUCCESSFULLY_SET));
                 return true;
             }
         }
