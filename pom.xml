@@ -59,9 +59,7 @@
                             <packaging>jar</packaging>
                             <generatePom>true</generatePom>
                         </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
+                        <goals></goals>
                     </execution>
                 </executions>
             </plugin>
