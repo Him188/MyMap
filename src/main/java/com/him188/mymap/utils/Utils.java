@@ -115,7 +115,7 @@ public final class Utils {
         BlockItemFrame frame = new BlockItemFrame(Utils.getMetaByFace(face));
         level.setBlock(pos, frame, true, false);
 
-        FullChunk chunk = level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, true);
+        FullChunk chunk = level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, false);
         if (chunk == null) {
             return -1;
         }
