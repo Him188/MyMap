@@ -21,7 +21,7 @@ import static com.him188.mymap.utils.LanguageBase.getMessage;
 public final class MainCommand extends PluginCommand<MyMap> implements CommandExecutor {
     public MainCommand(String name, MyMap owner) {
         super(name, owner);
-        setCommandParameters(new HashMap<>() {
+        setCommandParameters(new HashMap<String, CommandParameter[]>() {
             {
                 put("set", new CommandParameter[]{
                         new CommandParameter("arg", new String[]{"set", "add"}),
