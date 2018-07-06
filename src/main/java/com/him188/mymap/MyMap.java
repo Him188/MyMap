@@ -68,12 +68,12 @@ public final class MyMap extends PluginBase {
     public void onEnable() {
         super.onEnable();
 
+        saveResource("default.jpg", "images/default.jpg", false);
         MyMapFrame.IMAGE_DATA_FOLDER = new File(getDataFolder(), "images");
         MyMapFrame.DEFAULT_IMAGE_FILE = Utils.detectImageFile(new File(MyMapFrame.IMAGE_DATA_FOLDER, "default").getPath());
         MyMapFrame.IMAGE_DATA_FOLDER.mkdir();
         MyMapFrame.FRAME_DATA_FOLDER = new File(getDataFolder(), "frames");
         MyMapFrame.FRAME_DATA_FOLDER.mkdir();
-        saveResource("default.jpg", "images/default.jpg", false);
 
         saveDefaultConfig();
         reloadConfig();
