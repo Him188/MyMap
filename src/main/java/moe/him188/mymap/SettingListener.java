@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
+import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -83,11 +84,8 @@ public final class SettingListener implements Listener {
         settingDataMap.remove(player.getUniqueId());
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onInteract(PlayerInteractEvent event) {
-        if (event.getAction() != PlayerInteractEvent.Action.LEFT_CLICK_BLOCK && event.getAction() != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
-            return;
-        }
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onBreak(BlockBreakEvent event) {
 
         if (settingDataMap.containsKey(event.getPlayer().getUniqueId())) {
             event.setCancelled();
@@ -118,6 +116,29 @@ public final class SettingListener implements Listener {
                     return;
                 }
 
+                case SET_FACE: {
+                    event.getPlayer().sendMessage(getMessage(TOUCH_FACE));
+                    return;
+                }
+
+                default: {
+                    removeSettingPlayer(event.getPlayer());
+                    event.getPlayer().sendMessage(getMessage(OPTION_INVALID));
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onInteract(PlayerInteractEvent event) {
+        if (event.getAction() != PlayerInteractEvent.Action.LEFT_CLICK_BLOCK && event.getAction() != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+
+        if (settingDataMap.containsKey(event.getPlayer().getUniqueId())) {
+            event.setCancelled();
+            SettingData data = settingDataMap.get(event.getPlayer().getUniqueId());
+            switch (data.step) {
                 case SET_FACE: {
                     data.face = event.getFace();
                     removeSettingPlayer(event.getPlayer());

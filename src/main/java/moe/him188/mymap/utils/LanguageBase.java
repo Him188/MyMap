@@ -40,7 +40,7 @@ public final class LanguageBase {
             put(LOAD_FRAME_ERROR, "加载画框 %0 时遇到错误");
             put(SET_HAS_BEEN_CANCELED, AQUA + "已取消设置");
             put(FRAME_IS_EXISTS, RED + "此 ID 的画框已经存在了");
-            put(SET_START, AQUA + "开始设置, 请点击一个点, 这个点将作为矩形画框起始点");
+            put(SET_START, AQUA + "开始设置, 请拆除一个点, 这个点将作为矩形画框起始点");
             put(FRAME_DOES_NOT_EXISTS, RED + "ID为 %0 的画框不存在");
             put(OPTION_CANCELLED, RED + "操作被意外终止");
             put(SUCCESSFULLY_DELETED, AQUA + "删除成功");
@@ -49,8 +49,8 @@ public final class LanguageBase {
             put(SUCCESSFULLY_SET, AQUA + "设置成功");
             put(CAN_NOT_DELETE_CONFIG, "无法删除 %0 的配置文件.");
 
-            put(SET_END_POS, AQUA + "请点击另一个点以确定一个矩形框. 请保证矩形框只有一格宽度");
-            put(TOUCH_THE_SAME_WORLD, RED + "请点击同一个世界内的方块. 本次操作已取消");
+            put(SET_END_POS, AQUA + "请拆除另一个点以确定一个矩形框. 请保证矩形框只有一格宽度");
+            put(TOUCH_THE_SAME_WORLD, RED + "请拆除同一个世界内的方块. 本次操作已取消");
             put(WRONG_WIDTH, RED + "请设置宽度为1的矩形框. 本次操作已取消");
             put(TOUCH_FACE, AQUA + "请点击需要显示面");
             put(OPTION_INVALID, RED + "无效操作");
@@ -64,7 +64,7 @@ public final class LanguageBase {
             put(LOAD_FRAME_ERROR, "Error while loading frame %0");
             put(SET_HAS_BEEN_CANCELED, AQUA + "Operation has been cancelled");
             put(FRAME_IS_EXISTS, RED + "The frame with id %0 does already exists");
-            put(SET_START, AQUA + "Setting starts. Please touch a block, and this block will be the starting point for rectangular frame");
+            put(SET_START, AQUA + "Setting starts. Please break a block, and this block will be the starting point for rectangular frame");
             put(FRAME_DOES_NOT_EXISTS, RED + "The frame with id %0 does not exists");
             put(OPTION_CANCELLED, RED + "Operation has been cancelled accidentally");
             put(SUCCESSFULLY_DELETED, AQUA + "Successfully deleted");
@@ -73,8 +73,8 @@ public final class LanguageBase {
             put(SUCCESSFULLY_SET, AQUA + "Successfully set");
             put(CAN_NOT_DELETE_CONFIG, "Can not delete config of %0");
 
-            put(SET_END_POS, AQUA + "Please click on another point to determine a rectangular frame. Please ensure that only one width rectangle");
-            put(TOUCH_THE_SAME_WORLD, RED + "Please click in the same world. This operation has been cancelled");
+            put(SET_END_POS, AQUA + "Please break on another point to determine a rectangular frame. Please ensure that only one width rectangle");
+            put(TOUCH_THE_SAME_WORLD, RED + "Please break in the same world. This operation has been cancelled");
             put(WRONG_WIDTH, RED + "Please set the width of 1 rectangular frame. This operation has been cancelled");
             put(TOUCH_FACE, AQUA + "Please click on the need to display surface");
             put(OPTION_INVALID, RED + "Invalid operation");
