@@ -1,4 +1,4 @@
-# MyMap
+# MyMap [![Build Status](https://travis-ci.org/Him188/MyMap.svg?branch=master)](https://travis-ci.org/Him188/MyMap)
 
 MyMap plugin for [Nukkit](https://github.com/nukkit/nukkit). Show your gif image on the server!
 
