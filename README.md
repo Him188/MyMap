@@ -8,10 +8,8 @@ This plugin allows you to show static images, gif images, multi images
 on your server.  
 Screenshots is in the end.
 
-## Download
-
-Download JAR file  
-[Jenkins](http://repo.him188.moe:8080/job/mymap/)
+## Download [![Build Status](https://travis-ci.org/Him188/MyMap.svg?branch=master)](https://travis-ci.org/Him188/MyMap)
+- [Jenkins](http://repo.him188.moe:8080/job/MyMap)
 
 ## Usage
 
