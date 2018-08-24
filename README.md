@@ -16,15 +16,18 @@ Screenshots is in the end.
 1. Install the plugin into your server. And join in.
 2. Create a rectangle in a world(Any one, not just the main world).
 3. Use command `/mymap add <id>` to make the rectangle become a frame.
-4. Use command `/mymap setpicture <id> <imageFile>` to set the picture
-   in the frame.
-5. The plugin will start to fill in the frame. Enjoy it!
+4. Put your images into `plugins/MyMap/images/`.
+5. Use command `/mymap setpicture <id> <imageFileName>` to set the picture
+   in the frame. (imageFileName not include path)
+6. The plugin will start to fill in the frame. Enjoy it!
 
 ## Tips
 
 - If you want to change the picture, just use command `/mymap setpicture <id> <imageFile>` again.
 - An OP can long-touch(Left-click for Win10) a frame to look up id of the frame.
 - This plugin supports languages in 简体中文(Chinese Simplified) and English
+- This plugin will auto select the language(based on your system language)
+- You can change language in config.yml
 
 ## Q&A
 
