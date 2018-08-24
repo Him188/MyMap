@@ -3,6 +3,7 @@ package moe.him188.mymap.utils;
 import moe.him188.mymap.MyMapFrame;
 
 import java.util.EnumMap;
+import java.util.Locale;
 
 import static cn.nukkit.utils.TextFormat.AQUA;
 import static cn.nukkit.utils.TextFormat.RED;
@@ -84,10 +85,25 @@ public final class LanguageBase {
     });
 
 
-    public static final LanguageBase DEFAULT = CHINESE;
+    public static LanguageBase CURRENT_LANGUAGE = getDefaultLanguage();
 
-    public static LanguageBase CURRENT_LANGUAGE = DEFAULT;
+    private static LanguageBase type;
 
+    public static LanguageBase getDefaultLanguage() {
+        if (type != null) {
+            return type;
+        }
+
+        Locale locale = Locale.getDefault();
+
+        if (locale == Locale.SIMPLIFIED_CHINESE) {
+            return type = CHINESE;
+        } else if (locale == Locale.TRADITIONAL_CHINESE) {
+            return type = CHINESE;
+        } else {
+            return type = ENGLISH;
+        }
+    }
 
     public static String getMessage(ID id, String... args) {
         if (id == null) {

@@ -1,3 +1,3 @@
-# 语言, 有两种预设可选, 中文("Chinese")或英文("English")
-# Language type, There are two kinds of presupposition is optional, "Chinese" or "English"
-language: Chinese
+# 语言, 有三种预设可选, 自动("Auto"), 中文("Chinese")或英文("English")
+# Language type, There are 3 kinds of presupposition is optional, "Auto", "Chinese" or "English"
+language: Auto

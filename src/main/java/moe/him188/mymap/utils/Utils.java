@@ -129,13 +129,13 @@ public final class Utils {
         return frameEntity.getId();
     }
 
-    public static ClientboundMapItemDataPacket getClientboundMapItemDataPacket(BufferedImage image, long mapId) {
+    public static ClientboundMapItemDataPacket getClientboundMapItemDataPacket(BufferedImage image, int width, int height, long mapId) {
         ClientboundMapItemDataPacket pk = new ClientboundMapItemDataPacket();
         pk.mapId = mapId;
         pk.update = 2;
         pk.scale = 0;
-        pk.width = 128;
-        pk.height = 128;
+        pk.width = width;
+        pk.height = height;
         pk.offsetX = 0;
         pk.offsetZ = 0;
         pk.image = image;

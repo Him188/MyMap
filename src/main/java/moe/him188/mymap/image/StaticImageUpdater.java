@@ -41,7 +41,7 @@ public class StaticImageUpdater extends ImageUpdater {
             long hash = this.updateMapCacheBlock(vector2);
             long mapId = this.getMapId(hash);
             long blockEntityId = this.getBlockEntityId(hash);
-            this.updatePacketCache(blockEntityId, Utils.getClientboundMapItemDataPacket(image, mapId));
+            this.updatePacketCache(blockEntityId, Utils.getClientboundMapItemDataPacket(image, SUB_IMAGE_WIDTH, SUB_IMAGE_WIDTH, mapId));
             this.requestMapUpdate(players, true);
         });
     }
