@@ -8,7 +8,7 @@ This plugin allows you to show static images, gif images, multi images
 on your server.  
 Screenshots is in the end.
 
-## Download [![Build Status](https://travis-ci.org/Him188/MyMap.svg?branch=master)](https://travis-ci.org/Him188/MyMap)
+## Download
 - [TeamCity](http://repo.him188.moe:2333/project.html?projectId=Mymap)
 
 ## Usage
