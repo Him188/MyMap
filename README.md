@@ -9,7 +9,7 @@ on your server.
 Screenshots is in the end.
 
 ## Download
-- [TeamCity](http://repo.him188.moe:2333/project.html?projectId=Mymap)
+- [TeamCity](http://mamoe.net:2333/viewType.html?buildTypeId=Mymap_Build)
 
 ## Usage
 
