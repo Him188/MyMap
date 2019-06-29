@@ -7,7 +7,7 @@
     <groupId>moe.him188</groupId>
     <artifactId>mymap</artifactId>
     <name>MyMap</name>
-    <version>1.4</version>
+    <version>1.5</version>
 
 
     <properties>
@@ -19,7 +19,7 @@
     <repositories>
         <repository>
             <id>him188-nukkit</id>
-            <url>http://repo.him188.moe:8081/repository/nukkit/</url>
+            <url>http://repo.him188.moe:8081/repository/public/</url>
         </repository>
     </repositories>
 
@@ -63,14 +63,8 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.1.0</version>
                 <configuration>
                     <attach>true</attach>
                 </configuration>

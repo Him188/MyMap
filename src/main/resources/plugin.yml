@@ -1,6 +1,6 @@
 name: MyMap
 author: Him188
-version: 1.4
+version: 1.5
 api: [1.0.0]
 main: moe.him188.mymap.MyMap
 description: "Shows images on your server!"

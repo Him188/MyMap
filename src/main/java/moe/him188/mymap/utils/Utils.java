@@ -103,7 +103,7 @@ public final class Utils {
 
     public static ItemMap newMap() {
         CompoundTag tag = new CompoundTag();
-        tag.putString("map_uuid", "" + random());
+        tag.putLong("map_uuid", random());
         return (ItemMap) new ItemMap().setNamedTag(tag);
     }
 

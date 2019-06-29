@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Him188 @ MyMap Project
  */
 public abstract class ImageUpdater {
-    protected static final int SUB_IMAGE_WIDTH = 16; //map width
+    protected static final int SUB_IMAGE_WIDTH = 128; //map width
     protected static final double VIEW_DISTANCE = 20;
 
     public static ImageUpdater getImageUpdater(Vector3 start, Vector3 end, Level level, BlockFace face, File file) throws IOException {

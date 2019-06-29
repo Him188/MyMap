@@ -22,6 +22,7 @@ public class ResizeImageAdapter extends SingleImageAdapter {
         BufferedImage result = new BufferedImage(width, height, this.getImage().getType());
         Graphics2D g = result.createGraphics();
         g.drawImage(this.getImage(), 0, 0, width, height, null);
+        g.dispose();
         this.image = result;
     }
 }

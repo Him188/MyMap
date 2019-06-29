@@ -23,14 +23,15 @@ public abstract class DynamicPlayer extends Thread implements InterruptibleThrea
     @Override
     public final void run() {
         while (!this.cancelled) {
-            final long startingTime = System.currentTimeMillis();
             long delay = this.nextDelay();
+
+            long targetTime = System.currentTimeMillis() + delay;
             this.callback();
-            final long targetTime = startingTime + delay;
-            while (System.currentTimeMillis() < targetTime) {
+            if (targetTime > System.currentTimeMillis()) {
                 try {
-                    Thread.sleep(2);
-                } catch (InterruptedException ignored) {
+                    Thread.sleep(targetTime - System.currentTimeMillis());
+                } catch (InterruptedException e) {
+                    setCancelled();
                     return;
                 }
             }
