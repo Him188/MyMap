@@ -6,7 +6,7 @@ MyMap plugin for [Nukkit](https://github.com/nukkit/nukkit). Show your gif image
 
 This plugin allows you to show static images, gif images, multi images
 on your server.  
-Screenshots is in the end.
+Screenshots are in the end.
 
 ## Download
 - [TeamCity](http://mamoe.net:2333/viewType.html?buildTypeId=Mymap_Build)
