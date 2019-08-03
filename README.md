@@ -8,7 +8,7 @@ This plugin allows you to show static images, gif images, multi images(Several i
 Screenshots are at the end of this README.
 
 ## Download
-- [TeamCity](http://mamoe.net:2333/viewType.html?buildTypeId=Mymap_Build)
+- [via TeamCity](http://mamoe.net:2333/viewType.html?buildTypeId=Mymap_Build)
 
 ## Usage
 
