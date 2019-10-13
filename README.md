@@ -9,6 +9,7 @@ Screenshots are at the end of this README.
 
 ## Download
 - [via TeamCity](http://mamoe.net:2333/viewType.html?buildTypeId=Mymap_Build)
+- [via GitHub](https://github.com/Him188/MyMap/releases/tag/1.5)
 
 ## Usage
 
